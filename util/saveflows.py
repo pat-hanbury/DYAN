@@ -3,6 +3,10 @@ import numpy as np
 import pyflow
 import pandas as pd
 from PIL import Image
+import yaml
+
+with open('../Code/configs.yaml', 'r') as file:
+    configs = yaml.safe_load(file)
 
 def getListOfFolders(File):
 	data = pd.read_csv(File, sep=" ", header=None)[0]
@@ -20,12 +24,12 @@ nInnerFPIterations = 1
 nSORIterations = 30
 colType = 0
 
-testFolderFile = 'trainlist01.txt'
+testFolderFile = configs['testFolderFile']
 trainFoldeList = getListOfFolders(testFolderFile)[::10]
-saveDir = '/data/Abhishek/sample'
-rootDir = '/data/Abhishek/frames'
+saveDir = configs['flowSaveDir']
+rootDir = configs['rootDir']
 
-print(len(trainFoldeList))
+print(trainFoldeList[0:10])
 
 for foldernum,folder in enumerate(trainFoldeList):
 	frames = [each for each in os.listdir(os.path.join(rootDir,folder)) if each.endswith(('.jpg','.jpeg'))]

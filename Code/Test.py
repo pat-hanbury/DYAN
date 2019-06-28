@@ -9,6 +9,7 @@ import time
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+import yaml
 
 
 from DyanOF import OFModel
@@ -18,6 +19,8 @@ from skimage import measure
 from scipy.misc import imread, imresize
 ############################# Import Section #################################
 
+with open('../Code/configs.yaml', 'r') as file:
+    configs = yaml.safe_load(file)
 
 # Hyper Parameters
 FRA = 3 # if Kitti: FRA = 9
@@ -27,11 +30,11 @@ T = FRA
 numOfPixels = 240*320 # if Kitti: 128*160
 
 gpu_id = 1
-opticalflow_ckpt_file = 'preTrainedModel/UCFModel.pth' # if Kitti: 'KittiModel.pth'
+opticalflow_ckpt_file = configs['opticalflow_ckpt_file']
 
 def loadOpticalFlowModel(ckpt_file):
-	loadedcheckpoint = torch.load(ckpt_file)
-	stateDict = loadedcheckpoint['state_dict']
+	checkpoint = torch.load(ckpt_file)
+	stateDict = checkpoint['state_dict']
 	
 	# load parameters
 	Dtheta = stateDict['l1.theta'] 
@@ -81,19 +84,20 @@ ofmodel = loadOpticalFlowModel(opticalflow_ckpt_file)
 ofSample = torch.FloatTensor(2, FRA, numOfPixels)
 
 # set test list name:
-testFolderFile = 'testlist01.txt'
+testFolderFile = configs['testFolderFile']
 # set test data directory:
-rootDir = '/data/Abhishek/frames/'
+rootDir = configs['rootDir']
 # for UCF dataset:
 testFoldeList = getListOfFolders(testFolderFile)[::10]
 ## if Kitti: use folderList instead of testFoldeList
 ## folderList = [name for name in os.listdir(rootDir) if os.path.isdir(os.path.join(rootDir))]
 ## folderList.sort()
 
-flowDir = '/home/abhishek/Workspace/UCF_Flows/Flows_ByName/'
+flowDir = configs['flowDir']
 
 for	numfo,folder in enumerate(testFoldeList):
-	print("Started testing for - "+ folder)
+	print("Started testing for - "+ folder); from pdb import set_trace; set_trace()
+
 
 	if not os.path.exists(os.path.join("Results", str(10*numfo+1))):
 		os.makedirs(os.path.join("Results", str(10*numfo+1)))
@@ -109,7 +113,7 @@ for	numfo,folder in enumerate(testFoldeList):
 	img = Image.open(path)
 	frame4 = np.array(img)/255.
 
-	tensorinput = torch.from_numpy(frame4).type(torch.FloatTensor).permute(2,0,1).cuda(gpu_id).unsqueeze(0)
+	tensorinput = torch.from_numpy(frame4).type(torch.FloatTensor).permute(2,0,1).cuda(gpu_id).unsqueeze(0); import time; print(f"Tensor input shape: {tensorinput.shape}"); time.sleep(10)
 	
 	for k in range(3):
 		flow = np.load(os.path.join(flowDir,folder,str(k)+'.npy'))

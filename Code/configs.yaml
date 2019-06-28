@@ -1,0 +1,6 @@
+testFolderFile: '/home/hanburyp/DYAN/Code/testlist01.txt'
+rootDir: '/data/hanburyp/UCF_Frames_ByName'
+flowDir: '/data/hanburyp/UCF_Flows_ByName'
+opticalflow_ckpt_file: 'DYAN/preTrainedModel/UCFModel.pth' # if Kitti: 'KittiModel.pth'
+flowSaveDir: '/data/hanburyp/UCF_Flows_ByName'
+# gpu_id: 1
